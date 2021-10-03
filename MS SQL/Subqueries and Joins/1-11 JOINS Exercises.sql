@@ -47,7 +47,9 @@ JOIN EmployeesProjects ON Employees.EmployeeID = EmployeesProjects.EmployeeID
 LEFT JOIN Projects ON Projects.ProjectID = EmployeesProjects.ProjectID AND StartDate < '2005-01-01'
 WHERE EmployeesProjects.EmployeeID = 24
 
-SELECT Employees.EmployeeID, Employees.FirstName, Employees.ManagerID, Departments.Name AS ManagerName
 
-
-SELECT * FROM Departments
+SELECT TOP(1) AVG(Employees.Salary) AS MinAverageSalary
+FROM Employees
+JOIN Departments ON Employees.DepartmentID = Departments.DepartmentID
+GROUP BY Departments.Name
+ORDER BY MinAverageSalary
