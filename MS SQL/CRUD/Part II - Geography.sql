@@ -1,6 +1,8 @@
 --22. All Mountain Peaks
 Select PeakName
 FROM Peaks
+ORDER BY PeakName
+
 
 --23. Biggest Countries by Population
 SELECT TOP(30) CountryName, [Population]
