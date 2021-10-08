@@ -74,7 +74,10 @@ JOIN Departments AS d ON d.DepartmentID=e1.DepartmentID
 ORDER BY e1.EmployeeID
 
 -- 11. Min Average Salary
-
+SELECT TOP(1) AVG(Salary) AS MinAverageSalary
+FROM Employees
+GROUP BY DepartmentID
+ORDER BY MinAverageSalary
 
 --12. Highest Peaks in Bulgaria
 SELECT c.CountryCode, m.MountainRange, p.PeakName, p.Elevation
@@ -105,6 +108,34 @@ LEFT JOIN Countries AS c
 ON cr.CountryCode = c.CountryCode
 ORDER BY c.CountryName
 
---15. Continents and Currencies
-SELECT 
-FROM Continents, Currencies
+--15. Countries Without any Mountains
+SELECT COUNT(c.CountryCode) AS Count
+FROM Countries AS c
+LEFT JOIN MountainsCountries AS mc ON c.CountryCode = mc.CountryCode
+WHERE mc.MountainId IS NULL
+
+
+--16. Countries Without any Mountains
+SELECT TOP(5) c.CountryName, MAX(p.Elevation) AS HighestPeakElevation, MAX(r.Length) AS LongestRiverLength
+FROM Countries AS c
+LEFT JOIN MountainsCountries AS mc ON mc.CountryCode = c.CountryCode
+LEFT JOIN Peaks AS p ON p.MountainId = mc.MountainId
+LEFT JOIN CountriesRivers AS cr ON cr.CountryCode = c.CountryCode
+LEFT JOIN Rivers AS r ON r.Id = cr.RiverId
+GROUP BY c.CountryName
+ORDER BY HighestPeakElevation DESC, LongestRiverLength DESC, c.CountryName
+
+--17.Highest Peak Name and Elevation by Country
+SELECT TOP(5) Country,
+CASE WHEN PeakName IS NULL THEN('(no highest peak)') ELSE PeakName END AS 'Highest Peak Name'
+,CASE WHEN Elevation IS NULL THEN 0 ELSE Elevation END AS 'Highest Peak Elevation'
+,CASE WHEN MountainRange IS NULL THEN('(no mountain)') ELSE MountainRange END AS 'Mountain'
+	FROM (SELECT *,DENSE_RANK() OVER(PARTITION BY [Country] ORDER BY [Elevation] DESC) AS [PeakRank]
+		FROM (SELECT CountryName AS [Country],p.PeakName,p.Elevation,m.MountainRange FROM
+			Countries AS c
+				LEFT JOIN MountainsCountries AS mc ON C.CountryCode=mc.CountryCode
+				LEFT JOIN Mountains AS m ON m.Id=mc.MountainId
+				LEFT JOIN Peaks AS p ON p.MountainId=m.Id
+		     ) AS [Ful]
+	    ) AS[FULL]
+WHERE PeakRank=1
