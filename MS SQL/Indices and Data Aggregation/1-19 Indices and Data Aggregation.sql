@@ -56,3 +56,33 @@ GROUP BY CASE
 	WHEN Age BETWEEN 51 AND 60 THEN '[51-60]'
     ELSE '[61+]'
 	END
+
+--10.First Letter
+SELECT LEFT(wd.FirstName, 1) AS FirstLetter
+FROM WizzardDeposits AS wd
+WHERE wd.DepositGroup = 'Troll Chest'
+GROUP BY LEFT(wd.FirstName, 1)
+ORDER BY LEFT(wd.FirstName, 1) 
+
+--11. Average Interest
+SELECT DepositGroup, IsDepositExpired, AVG(DepositInterest) AS AverageInterest
+FROM WizzardDeposits
+WHERE DepositStartDate > '1985-01-01'
+GROUP BY DepositGroup, IsDepositExpired
+ORDER BY DepositGroup DESC
+
+--12.Rich Wizard, Poor Wizard
+
+
+--13.Departments Total Salaries
+SELECT DepartmentID, SUM(Salary) AS TotalSalary
+FROM Employees
+GROUP BY DepartmentID
+
+--14.Employees Minimum Salaries
+SELECT DepartmentID, MIN(Salary) AS MinimumSalary
+FROM Employees
+WHERE DepartmentID IN (2,5,7)
+GROUP BY DepartmentID
+
+--15. Employees Average Salaries
