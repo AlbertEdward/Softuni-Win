@@ -86,3 +86,48 @@ WHERE DepartmentID IN (2,5,7)
 GROUP BY DepartmentID
 
 --15. Employees Average Salaries
+SELECT * INTO AverageSalaryTable
+FROM Employees
+WHERE Salary > 30000
+
+DELETE FROM AverageSalaryTable WHERE ManagerID = 42
+
+UPDATE AverageSalaryTable
+SET Salary += 5000
+WHERE DepartmentID = 1
+
+SELECT DepartmentId, AVG(Salary)
+FROM AverageSalaryTable
+GROUP BY DepartmentID
+
+--16.Employees Maximum Salaries
+SELECT DepartmentId, MAX(Salary)
+FROM Employees
+GROUP BY DepartmentID
+HAVING MAX(Salary) NOT BETWEEN 30000 AND 70000
+
+--17. Employees Count Salaries
+SELECT COUNT(*) AS Count
+FROM Employees
+WHERE ManagerID IS NULL
+
+--18. 3rd Highest Salary
+SELECT
+	DepartmentID, Salary AS [ThirdHighestSalary]
+FROM
+	(SELECT DepartmentID, Salary,
+	DENSE_RANK() OVER(PARTITION BY DepartmentID ORDER BY Salary DESC) AS ThirdRank
+	FROM Employees
+	GROUP BY DepartmentID,Salary) AS SortedRank
+WHERE ThirdRank=3
+
+--19.Salary Challenge 
+SELECT * 
+FROM 
+(SELECT TOP(10) e.FirstName, e.LastName, e.DepartmentID
+FROM Employees as e
+WHERE e.Salary > (SELECT AVG(Salary) AS AvgSalary
+							FROM Employees as e1
+							WHERE e.DepartmentId = e1.DepartmentId
+							GROUP BY DepartmentID)) as b
+ORDER BY b.DepartmentId
