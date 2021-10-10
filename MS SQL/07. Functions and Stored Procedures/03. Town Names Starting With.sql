@@ -1,9 +1,9 @@
-CREATE OR ALTER PROC usp_GetTownsStartingWith @Str varchar(50)
+CREATE PROC usp_GetTownsStartingWith @Str varchar(50)
 AS
 BEGIN
 	SELECT Name
 	FROM Towns
-	WHERE Name LIKE '%' + @Str + '%'
+	WHERE Name LIKE LOWER(@Str+'%')
 END
 
 EXEC usp_GetTownsStartingWith 'b'
