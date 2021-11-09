@@ -11,10 +11,12 @@
         static void Main(string[] args)
         {
             SoftUniContext sk = new SoftUniContext();
-            string context = GetEmployeesFromResearchAndDevelopment(sk);
+            string context = GetEmployeesInPeriod(sk);
             Console.WriteLine(context);
 
         }
+
+        //Problem 3
         public static string GetEmployeesFullInformation(SoftUniContext context)
         {
             StringBuilder sb = new StringBuilder();
@@ -32,6 +34,7 @@
             return sb.ToString().TrimEnd();
         }
 
+        //Problem 4
         public static string GetEmployeesWithSalaryOver50000(SoftUniContext context)
         {
             Employee[] employees = context
@@ -52,7 +55,7 @@
 
         }
 
-
+        //Problem 5
         public static string GetEmployeesFromResearchAndDevelopment(SoftUniContext context)
         {
             StringBuilder sb = new StringBuilder();
@@ -77,6 +80,48 @@
             }
 
             return sb.ToString();
+        }
+
+        //Problem 6
+        public static string AddNewAddressToEmployee(SoftUniContext context)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            Address newAddress = new Address()
+            {
+                AddressText = "Vitoshka 15",
+                TownId = 4
+            };
+
+            context.Addresses.Add(newAddress);
+
+            Employee nakovEmployees = context
+                .Employees
+                .First(e => e.LastName == "Nakov");
+
+            nakovEmployees.Address = newAddress;
+
+            context.SaveChanges();
+
+            string[] allEmployeesAddresses = context
+                .Employees
+                .OrderByDescending(x => x.AddressId)
+                .Select(e => e.Address.AddressText)
+                .Take(10)
+                .ToArray();
+
+            return string.Join(Environment.NewLine, allEmployeesAddresses);
+        }
+
+        public static string GetEmployeesInPeriod(SoftUniContext context)
+        {
+            Employee[] employees = context
+                .Employees
+                .Where(x => 
+                .StartDate.CompareTo(2001) >= 0 && x.StartDate.CompareTo(2003) <= 0
+                && x.StartDate.CompareTo(x.EndDate) < 0)
+                .
+
         }
     }
     
