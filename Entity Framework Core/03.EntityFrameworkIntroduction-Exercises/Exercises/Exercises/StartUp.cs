@@ -3,6 +3,7 @@
     using SoftUni.Data;
     using SoftUni.Models;
     using System;
+    using System.Globalization;
     using System.Linq;
     using System.Text;
 
@@ -11,7 +12,7 @@
         static void Main(string[] args)
         {
             SoftUniContext sk = new SoftUniContext();
-            string context = IncreaseSalaries(sk);
+            string context = GetLatestProjects(sk);
             Console.WriteLine(context);
 
         }
@@ -114,6 +115,57 @@
             return string.Join(Environment.NewLine, allEmployeesAddresses);
         }
 
+        //Problem 7
+        public static string GetEmployeesInPeriod(SoftUniContext context)
+        {
+            EmployeeProject[] employeeProjects = context
+                .EmployeesProjects
+                .Where(e => e.Project.StartDate.Year >= 2001 &&
+                            e.Project.StartDate.Year <= 2003)
+                .Take(10)
+                .ToArray();
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var e in employeeProjects)
+            {
+                sb.AppendLine($"{e.Employee.FirstName} - Manager: {e.Employee.Manager.FirstName} {e.Employee.Manager.LastName}");
+                sb.AppendLine($"--{e.Project.Name} - {e.Project.StartDate.ToString("M/d/yyyy h:mm:ss tt", new CultureInfo("en-US"))} - {e.Project.EndDate}");
+            }
+
+            return sb.ToString();
+
+        }
+
+        //Problem 11
+        public static string GetLatestProjects(SoftUniContext context)
+        {
+            var projects = context
+                .Projects
+                .Select(p => new
+                {
+                    p.Name,
+                    p.Description,
+                    p.StartDate
+                })
+                .OrderByDescending(p => p.StartDate)
+                .Take(10)
+                .ToArray();
+
+            var a = projects.OrderBy(p => p.Name);
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var p in a)
+            {
+                sb.AppendLine(p.Name);
+                sb.AppendLine(p.Description);
+                sb.AppendLine($"{p.StartDate.ToString("M/d/yyyy h:mm:ss tt", new CultureInfo("en-US"))}");
+            }
+
+            return sb.ToString();
+        }
+
         //Problem 12
         public static string IncreaseSalaries(SoftUniContext context)
         { 
@@ -137,6 +189,7 @@
 
             return sb.ToString();
         }
+
 
 
 
