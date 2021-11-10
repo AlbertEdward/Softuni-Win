@@ -11,10 +11,11 @@
         static void Main(string[] args)
         {
             SoftUniContext sk = new SoftUniContext();
-            string context = GetEmployeesInPeriod(sk);
+            string context = IncreaseSalaries(sk);
             Console.WriteLine(context);
 
         }
+
 
         //Problem 3
         public static string GetEmployeesFullInformation(SoftUniContext context)
@@ -113,16 +114,33 @@
             return string.Join(Environment.NewLine, allEmployeesAddresses);
         }
 
-        public static string GetEmployeesInPeriod(SoftUniContext context)
-        {
-            Employee[] employees = context
-                .Employees
-                .Where(x => 
-                .StartDate.CompareTo(2001) >= 0 && x.StartDate.CompareTo(2003) <= 0
-                && x.StartDate.CompareTo(x.EndDate) < 0)
-                .
+        //Problem 12
+        public static string IncreaseSalaries(SoftUniContext context)
+        { 
+            StringBuilder sb = new StringBuilder();
 
+            Employee[] increasedEmployees = context
+                .Employees
+                .Where(e => e.Department.Name == "Engineering" ||
+                e.Department.Name == "Tool Design" ||
+                e.Department.Name == "Marketing" ||
+                e.Department.Name == "Information Services")
+                .OrderBy(e => e.FirstName)
+                .ThenBy(e => e.LastName)
+                .ToArray();
+
+            foreach (var e in increasedEmployees)
+            {
+                e.Salary = e.Salary * 0.12m + e.Salary;
+                sb.AppendLine($"{e.FirstName} {e.LastName} (${e.Salary:F2})");
+            }
+
+            return sb.ToString();
         }
+
+
+
+
     }
     
 }
