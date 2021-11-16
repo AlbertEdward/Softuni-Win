@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace P01_StudentSystem.Data.Models
+﻿namespace P01_StudentSystem.Data.Models
 {
+    using Microsoft.EntityFrameworkCore;
+    using P01_StudentSystem.Models;
+
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext()
@@ -15,8 +16,15 @@ namespace P01_StudentSystem.Data.Models
 
         }
 
-        public DbSet<Student> Students { get; set; }
-        public DbSet<Course> Courses { get; set; }
+        public virtual DbSet<Student> Students { get; set; }
+
+        public virtual DbSet<Course> Courses { get; set; }
+
+        public virtual DbSet<Resource> Resourses { get; set; }
+
+        public virtual DbSet<Homework> Homeworks { get; set; }
+
+        public virtual DbSet<StudentCourse> StudentCourses { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -29,6 +37,8 @@ namespace P01_StudentSystem.Data.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<StudentCourse>().HasKey(s => new { s.CourseId, s.StudentId });
+
             base.OnModelCreating(modelBuilder);
         }
     }

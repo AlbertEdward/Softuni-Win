@@ -14,11 +14,10 @@ namespace P01_StudentSystem.Models
 
         public string Content { get; set; }
 
-        public Enum ContentType { get; set; }
+        public string ContentType { get; set; }
 
         public DateTime SubmissionTime { get; set; }
 
-        [ForeignKey("StudentId")]
         public int StudentId { get; set; }
 
         public int CourseId { get; set; }

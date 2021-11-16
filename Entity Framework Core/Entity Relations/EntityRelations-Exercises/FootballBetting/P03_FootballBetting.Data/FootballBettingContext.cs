@@ -55,6 +55,30 @@
         {
             modelBuilder.Entity<PlayerStatistic>().HasKey(x => new { x.GameId, x.PlayerId });
 
+            modelBuilder.Entity<Team>()
+                .HasOne(t => t.PrimaryKitColor)
+                .WithMany(t => t.PrimaryKitTeams)
+                .HasForeignKey(t => t.PrimaryKitColorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Team>()
+                .HasOne(t => t.SecondaryKitColor)
+                .WithMany(t => t.SecondaryKitTeams)
+                .HasForeignKey(t => t.SecondaryKitColorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Game>()
+                .HasOne(g => g.HomeTeam)
+                .WithMany(g => g.HomeGames)
+                .HasForeignKey(g => g.HomeTeamId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Game>()
+                .HasOne(g => g.AwayTeam)
+                .WithMany(g => g.AwayGames)
+                .HasForeignKey(g => g.AwayTeamId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             base.OnModelCreating(modelBuilder);
         }
     }

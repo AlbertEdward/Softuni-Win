@@ -7,18 +7,18 @@ namespace P01_StudentSystem.Models
 {
     public class Resource
     {
+        [Key]
         public int ResourseId { get; set; }
 
-        [MaxLength(50)]
         public string Name { get; set; }
 
         public int MyProperty { get; set; }
 
         public string Url { get; set; }
 
-        public Enum ResourceType { get; set; }
+        public Enum Resources { get; set; }
 
-        public Course CourseId { get; set; }
+        public int CourseId { get; set; }
 
     }
 }
