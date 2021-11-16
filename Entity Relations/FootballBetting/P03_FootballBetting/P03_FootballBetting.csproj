@@ -13,4 +13,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\P03_FootballBetting.Data\P03_FootballBetting.Data.csproj" />
+  </ItemGroup>
+
 </Project>
