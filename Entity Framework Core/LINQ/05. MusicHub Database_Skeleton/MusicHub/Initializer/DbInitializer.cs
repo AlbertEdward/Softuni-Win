@@ -43,14 +43,14 @@
                     var entityName = $"{entityType.Name}s";
                     context.AddRange(entities);
 
-                    if (entityType != typeof(SongPerformer))
+                    if (entityType != typeof(Writer))
                     {
                         context.Database.ExecuteSqlCommand("SET IDENTITY_INSERT " + entityName + " ON;");
                     }
 
                     context.SaveChanges();
 
-                    if (entityType != typeof(SongPerformer))
+                    if (entityType != typeof(Writer))
                     {
                         context.Database.ExecuteSqlCommand("SET IDENTITY_INSERT " + entityName + "  OFF;");
                     }
