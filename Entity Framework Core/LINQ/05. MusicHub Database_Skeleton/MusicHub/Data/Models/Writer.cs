@@ -13,7 +13,7 @@ namespace MusicHub.Data.Models
         }
 
         [Key]
-        public int SongId { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [MaxLength(20)]

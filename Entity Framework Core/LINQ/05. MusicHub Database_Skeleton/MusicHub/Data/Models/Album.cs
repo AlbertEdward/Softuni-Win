@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Text;
 
 namespace MusicHub.Data.Models
@@ -23,12 +24,11 @@ namespace MusicHub.Data.Models
         [Required]
         public DateTime ReleaseDate { get; set; }
 
-        //TODO: calculated
-        public decimal Price { get; set; }
+        public decimal Price => this.Songs.Sum(x => x.Price);
 
         [ForeignKey(nameof(Producer))]
-        public int ProducerId { get; set; }
-        public string Producer { get; set; }
+        public int? ProducerId { get; set; }
+        public virtual Producer Producer { get; set; }
 
         public virtual ICollection<Song> Songs { get; set; }
     }

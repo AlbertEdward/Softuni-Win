@@ -15,6 +15,7 @@
             DbInitializer.ResetDatabase(context);
 
             //Test your solutions here
+            Console.WriteLine("DB Created!");
         }
 
         public static string ExportAlbumsInfo(MusicHubDbContext context, int producerId)

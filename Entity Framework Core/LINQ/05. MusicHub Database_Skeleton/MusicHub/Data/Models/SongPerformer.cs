@@ -11,11 +11,11 @@ namespace MusicHub.Data.Models
         [ForeignKey(nameof(Song))]
         public int SongId { get; set; }
         [Required]
-        public Performer Song { get; set; }
+        public virtual Song Song { get; set; }
 
         [ForeignKey(nameof(Performer))]
         public int PerformerId { get; set; }
         [Required]
-        public Song Performer { get; set; }
+        public virtual Performer Performer { get; set; }
     }
 }
