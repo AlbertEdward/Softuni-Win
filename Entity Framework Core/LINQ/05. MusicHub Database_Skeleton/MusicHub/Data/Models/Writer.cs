@@ -12,7 +12,7 @@ namespace MusicHub.Data.Models
             Songs = new HashSet<Song>();
         }
 
-        [Key]
+        
         public int Id { get; set; }
 
         [Required]
