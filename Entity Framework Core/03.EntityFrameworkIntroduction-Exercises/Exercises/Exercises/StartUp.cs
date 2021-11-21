@@ -1,8 +1,10 @@
 ﻿namespace SoftUni
 {
+    using Microsoft.EntityFrameworkCore;
     using SoftUni.Data;
     using SoftUni.Models;
     using System;
+    using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using System.Text;
@@ -12,7 +14,7 @@
         static void Main(string[] args)
         {
             SoftUniContext sk = new SoftUniContext();
-            string context = GetLatestProjects(sk);
+            string context = GetAddressesByTown(sk);
             Console.WriteLine(context);
 
         }
@@ -118,23 +120,63 @@
         //Problem 7
         public static string GetEmployeesInPeriod(SoftUniContext context)
         {
-            EmployeeProject[] employeeProjects = context
-                .EmployeesProjects
-                .Where(e => e.Project.StartDate.Year >= 2001 &&
-                            e.Project.StartDate.Year <= 2003)
+            StringBuilder content = new StringBuilder();
+
+            var employees = context.Employees
+                .Include(x => x.Manager)
+                .Include(x => x.EmployeesProjects)
+                .ThenInclude(x => x.Project)
+                .Where(employee => employee.EmployeesProjects
+                    .Any(project => project.Project.StartDate.Year >= 2001
+                                    && project.Project.StartDate.Year <= 2003))
                 .Take(10)
-                .ToArray();
+                .ToList();
 
-            StringBuilder sb = new StringBuilder();
-
-            foreach (var e in employeeProjects)
+            foreach (var employee in employees)
             {
-                sb.AppendLine($"{e.Employee.FirstName} - Manager: {e.Employee.Manager.FirstName} {e.Employee.Manager.LastName}");
-                sb.AppendLine($"--{e.Project.Name} - {e.Project.StartDate.ToString("M/d/yyyy h:mm:ss tt", new CultureInfo("en-US"))} - {e.Project.EndDate}");
+                content.AppendLine($"{employee.FirstName} {employee.LastName} - Manager: {employee.Manager.FirstName} {employee.Manager.LastName}");
+
+                foreach (var project in employee.EmployeesProjects)
+                {
+                    content.AppendLine($"--{project.Project.Name} -" +
+                                       $" {project.Project.StartDate.ToString("M/d/yyyy h:mm:ss tt", CultureInfo.InvariantCulture)} - " +
+                                       $"{(project.Project.EndDate == null ? "not finished" : project.Project.EndDate.Value.ToString("M/d/yyyy h:mm:ss tt", CultureInfo.InvariantCulture))}");
+                }
             }
 
-            return sb.ToString();
+            return content.ToString().TrimEnd();
 
+
+        }
+
+        //Problem 8
+        public static string GetAddressesByTown(SoftUniContext context)
+        {
+            SoftUniContext db = new SoftUniContext();
+
+            using (db)
+            {
+                var selectedAddresses = db.Addresses
+                    .OrderByDescending(a => a.Employees.Count)
+                    .ThenBy(a => a.Town.Name)
+                    .ThenBy(a => a.AddressText)
+                    .Take(10)
+                    .Select(a => new
+                    {
+                        Text = a.AddressText,
+                        Town = a.Town.Name,
+                        EmployeesCount = a.Employees.Count
+                    })
+                    .ToList();
+                StringBuilder sb = new StringBuilder();
+
+                foreach (var address in selectedAddresses)
+                {
+                    sb.AppendLine($"{address.Text}, {address.Town} - {address.EmployeesCount} employees");
+                }
+
+                return sb.ToString().TrimEnd();
+            }
         }
 
         //Problem 11

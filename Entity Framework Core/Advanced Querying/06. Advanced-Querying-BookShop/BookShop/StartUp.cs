@@ -9,6 +9,9 @@
         {
             using var db = new BookShopContext();
             DbInitializer.ResetDatabase(db);
+
+            
+
         }
     }
 }

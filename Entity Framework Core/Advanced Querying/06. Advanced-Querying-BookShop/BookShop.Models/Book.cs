@@ -4,6 +4,7 @@ namespace BookShop.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
 
     public class Book
     {
@@ -12,10 +13,13 @@ namespace BookShop.Models
             this.BookCategories = new HashSet<BookCategory>();
         }
 
+        [Key]
         public int BookId { get; set; }
 
+        [MaxLength(50)]
         public string Title { get; set; }
 
+        [MaxLength(1000)]
         public string Description { get; set; }
 
         public EditionType EditionType { get; set; }
