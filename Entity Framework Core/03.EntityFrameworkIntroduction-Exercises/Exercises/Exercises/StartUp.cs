@@ -149,33 +149,63 @@
 
         }
 
-        //Problem 8
+        //Problem 8 - UNSOLVED
         public static string GetAddressesByTown(SoftUniContext context)
         {
-            SoftUniContext db = new SoftUniContext();
-
-            using (db)
-            {
-                var selectedAddresses = db.Addresses
-                    .OrderByDescending(a => a.Employees.Count)
-                    .ThenBy(a => a.Town.Name)
-                    .ThenBy(a => a.AddressText)
-                    .Take(10)
-                    .Select(a => new
+            var address = context.Addresses
+                    .GroupBy(a => new
                     {
-                        Text = a.AddressText,
-                        Town = a.Town.Name,
-                        EmployeesCount = a.Employees.Count
-                    })
+                        a.AddressId,
+                        a.AddressText,
+                        a.Town.Name
+                    },
+                        (key, group) => new
+                        {
+                            AddressText = key.AddressText,
+                            Town = key.Name,
+                            Count = group.Sum(a => a.Employees.Count)
+                        })
+                    .OrderByDescending(o => o.Count)
+                    .ThenBy(o => o.Town)
+                    .ThenBy(o => o.AddressText)
+                    .Take(10)
                     .ToList();
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var a in address)
+            {
+                sb.AppendLine($"{a.AddressText}, {a.Town} - {a.Count} employees");
+            }
+
+            return sb.ToString();
+        
+        }
+
+        //Problem 9
+
+        public static string GetEmployee147(SoftUniContext context)
+        {
+            using (var dbContext = new SoftUniContext())
+            {
+                var employee = dbContext.Employees.
+                    Where(e => e.EmployeeId == 147)
+                    .Select(e => new {
+                        e.FirstName,
+                        e.LastName,
+                        e.JobTitle,
+                        Projects = e.EmployeesProjects
+                            .Select(ep => ep.Project.Name)
+                            .OrderBy(p => p)
+                            .ToList()
+                    })
+                    .First();
+
                 StringBuilder sb = new StringBuilder();
 
-                foreach (var address in selectedAddresses)
-                {
-                    sb.AppendLine($"{address.Text}, {address.Town} - {address.EmployeesCount} employees");
-                }
+                sb.AppendLine($"{employee.FirstName} {employee.LastName} - {employee.JobTitle}{Environment.NewLine}{String.Join(Environment.NewLine, employee.Projects)}");
 
-                return sb.ToString().TrimEnd();
+                return sb.ToString();
             }
         }
 
