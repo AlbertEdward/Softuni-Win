@@ -16,20 +16,24 @@ namespace ProductShop
         
         public static void Main(string[] args)
         {
-            var context = new ProductShopContext();
-            context.Database.EnsureDeleted();
-            context.Database.EnsureCreated();
+            ProductShopContext context = new ProductShopContext();
+            //context.Database.EnsureDeleted();
+            //context.Database.EnsureCreated();
 
-            string usersJsonAsString = File.ReadAllText("../../../Datasets/users.json");
-            string productsJsonAsString = File.ReadAllText("../../../Datasets/products.json");
-            string categoriesJsonAsString = File.ReadAllText("../../../Datasets/categories.json");
+            //string usersJsonAsString = File.ReadAllText("../../../Datasets/users.json");
+            //string productsJsonAsString = File.ReadAllText("../../../Datasets/products.json");
+            //string categoriesJsonAsString = File.ReadAllText("../../../Datasets/categories.json");
+            //string cProductsJsonAsString = File.ReadAllText("../../../Datasets/categories-products.json");
 
-            //Console.WriteLine(ImportUsers(context,usersJsonAsString));
+            //Console.WriteLine(ImportUsers(context, usersJsonAsString));
             //Console.WriteLine(ImportProducts(context, productsJsonAsString));
-            Console.WriteLine(ImportCategories(context, categoriesJsonAsString));
+            //Console.WriteLine(ImportCategories(context, categoriesJsonAsString));
+            //Console.WriteLine(ImportCategoryProducts(context, categoriesJsonAsString));
+
+            Console.WriteLine(GetProductsInRange(context)); 
         }
 
-        //01.Import Users
+        //01. Import Users
         public static string ImportUsers(ProductShopContext context, string inputJson)
         {
             IEnumerable<UserInputDto> users = JsonConvert.DeserializeObject<IEnumerable<UserInputDto>>(inputJson);
@@ -82,6 +86,39 @@ namespace ProductShop
             return $"Successfully imported {mappedCategory.Count()}";
         }
 
+        //04. Import Categories and Products
+        public static string ImportCategoryProducts(ProductShopContext context, string inputJson)
+        {
+            IEnumerable<CategoryProductInputDto> CProcducts = JsonConvert.DeserializeObject<IEnumerable<CategoryProductInputDto>>(inputJson);
+
+            InitializeMapper();
+
+            var mappedCProducts = mapper.Map<IEnumerable<CategoryProduct>>(CProcducts);
+            context.CategoryProducts.AddRange(mappedCProducts);
+            context.SaveChanges();
+
+            return $"Successfully imported {CProcducts.Count()}";
+        }
+
+        //05. Export Products In Range
+        public static string GetProductsInRange(ProductShopContext context)
+        {
+            var products = context.Products
+                .Where(x => x.Price >= 500 && x.Price <= 1000)
+                .OrderBy(x => x.Price)
+                .Select(x => new
+                {
+                    name = x.Name,
+                    price = x.Price,
+                    seller = $"{x.Seller.FirstName} {x.Seller.LastName}"
+                })
+                .ToList();
+
+            string productsAsJson = JsonConvert.SerializeObject(products, Formatting.Indented);
+
+
+            return productsAsJson;
+        }
         private static void InitializeMapper()
         {
             var mapperConfiguration = new MapperConfiguration(cfg =>
