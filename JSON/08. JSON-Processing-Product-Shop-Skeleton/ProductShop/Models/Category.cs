@@ -1,4 +1,6 @@
-﻿namespace ProductShop.Models
+﻿
+
+namespace ProductShop.Models
 {
     using System.Collections.Generic;
 
