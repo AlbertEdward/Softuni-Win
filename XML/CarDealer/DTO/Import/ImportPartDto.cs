@@ -3,13 +3,13 @@
     using System.Xml.Serialization;
 
     [XmlType("Part")]
-    public class ImportPartsDto
+    public class ImportPartDto
     {
         [XmlElement("name")]
         public string Name { get; set; }
 
         [XmlElement("price")]
-        public decimal Price { get; set; }
+        public string Price { get; set; }
 
         [XmlElement("quantity")]
         public int Quantity { get; set; }

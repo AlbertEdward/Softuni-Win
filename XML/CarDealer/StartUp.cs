@@ -61,20 +61,30 @@
 
             using StringReader stringReader = new StringReader(inputXml);
 
-            ImportPartsDto[] dtos = (ImportPartsDto[])
+            ImportPartsDto[] partDtos = (ImportPartsDto[])
                 xmlSerializer.Deserialize(stringReader);
 
             ICollection<Part> parts = new HashSet<Part>();
-            foreach (ImportPartsDto partsDto in dtos)
+            foreach (ImportPartsDto partDto in partDtos)
             {
-                Part s = new Part()
+                Supplier supplier = context
+                    .Suppliers
+                    .Find(partDto.SupplierId);
+
+                if (supplier == null)
                 {
-                    Name = partsDto.Name,
-                    Price = partsDto.Price,
-                    Quantity = partsDto.Quantity
+                    continue;
+                }
+
+                Part p = new Part()
+                {
+                    Name = partDto.Name,
+                    Price = decimal.Parse(partDto.Price),
+                    Quantity = partDto.Quantity,
+                    Supplier = supplier
                 };
 
-                parts.Add(s);
+                parts.Add(p);
             }
 
             context.Parts.AddRange(parts);
@@ -83,6 +93,8 @@
 
             return $"Successfully imported {parts.Count}";
         }
+
+
         private static void ResetDb(CarDealerContext dbContext)
         {
             dbContext.Database.EnsureDeleted();
