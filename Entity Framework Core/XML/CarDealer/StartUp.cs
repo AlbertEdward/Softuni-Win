@@ -57,15 +57,15 @@
         {
             XmlRootAttribute xmlRoot = new XmlRootAttribute("Parts");
             XmlSerializer xmlSerializer = new XmlSerializer(
-                typeof(ImportPartsDto[]), xmlRoot);
+                typeof(ImportPartDto[]), xmlRoot);
 
             using StringReader stringReader = new StringReader(inputXml);
 
-            ImportPartsDto[] partDtos = (ImportPartsDto[])
+            ImportPartDto[] partDtos = (ImportPartDto[])
                 xmlSerializer.Deserialize(stringReader);
 
             ICollection<Part> parts = new HashSet<Part>();
-            foreach (ImportPartsDto partDto in partDtos)
+            foreach (ImportPartDto partDto in partDtos)
             {
                 Supplier supplier = context
                     .Suppliers
@@ -94,6 +94,16 @@
             return $"Successfully imported {parts.Count}";
         }
 
+        //11. Import Cars
+        public static string ImportCars(CarDealerContext context, string inputXml)
+        {
+            XmlRootAttribute xmlRoot = new XmlRootAttribute("Parts");
+            XmlSerializer xmlSerializer = new XmlSerializer(
+                typeof(ImportPartDto[]), xmlRoot);
+
+
+            return $"Successfully imported {cars.Count}";
+        }
 
         private static void ResetDb(CarDealerContext dbContext)
         {
