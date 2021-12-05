@@ -33,31 +33,31 @@
             var theatersAndTickets =
               DataProcessor.Deserializer.ImportPlays(context,
                   File.ReadAllText(baseDir + "plays.xml"));
+
             PrintAndExportEntityToFile(theatersAndTickets, exportDir + "Actual Result - ImportPlays.txt");
 
             var casts = DataProcessor.Deserializer.ImportCasts(context,
               File.ReadAllText(baseDir + "casts.xml"));
+
             PrintAndExportEntityToFile(casts, exportDir + "Actual Result - ImportCasts.txt");
 
             var plays =
                DataProcessor.Deserializer.ImportTtheatersTickets(context,
                    File.ReadAllText(baseDir + "theatres-and-tickets.json"));
+
             PrintAndExportEntityToFile(plays, exportDir + "Actual Result - ImportTheatresTickets.txt");
-
-
-
-
-
         }
 
         private static void ExportEntities(TheatreContext context, string exportDir)
         {
             var exportTheaters = DataProcessor.Serializer.ExportTheatres(context, 6);
             Console.WriteLine(exportTheaters);
+
             File.WriteAllText(exportDir + "Actual Result - ExportTheatres.json", exportTheaters);
 
             var exportPlays = DataProcessor.Serializer.ExportPlays(context, 7.5);
             Console.WriteLine(exportPlays);
+
             File.WriteAllText(exportDir + "Actual Result - ExportPlays.xml", exportPlays);
         }
 
