@@ -13,6 +13,7 @@ namespace _01.Chronometer
         List<string> Laps { get; }
 
         void Start();
+
         void Stop();
 
         string Lap();

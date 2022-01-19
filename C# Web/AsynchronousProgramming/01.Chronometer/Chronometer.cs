@@ -42,7 +42,7 @@ namespace _01.Chronometer
 
         public void Stop()
         {
-            stopWatch.Start();
+            stopWatch.Stop();
         }
     }
 }

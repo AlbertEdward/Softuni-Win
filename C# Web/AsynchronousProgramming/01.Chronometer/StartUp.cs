@@ -24,13 +24,13 @@ while ((line = Console.ReadLine()) != "exit")
         if (chronometer.Laps.Count == 0)
         {
             Console.WriteLine("Laps: No laps");
-
+            continue;
         }
-        Console.WriteLine("Laps:");
+        Console.WriteLine("Laps: ");
 
         for (int i = 0; i < chronometer.Laps.Count; i++)
         {
-            Console.WriteLine($"{i}");
+            Console.WriteLine($"{i}. {chronometer.Laps[i]}");
         }
     }
     else if (line == "reset")
