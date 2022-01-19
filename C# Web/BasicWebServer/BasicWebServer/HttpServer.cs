@@ -47,8 +47,6 @@ Content-Length: {contentLength}
             var responseByte = Encoding.UTF8.GetBytes(response);
 
             networkStream.Write(responseByte);
-
-
         }
     }
 }
