@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BasicWebServer.Server
+﻿namespace BasicWebServer.Server
 {
+    using BasicWebServer.Server.HTTP;
+    using System.Net;
+    using System.Net.Sockets;
+    using System.Text;
+
     public class HttpServer
     {
         private readonly IPAddress ipAddress;
@@ -23,7 +20,7 @@ namespace BasicWebServer.Server
 
         }
 
-        public void Start()
+        public async Task Start()
         {
             this.serverListener.Start();
 
@@ -32,20 +29,31 @@ namespace BasicWebServer.Server
 
             while (true)
             {
-                var connection = serverListener.AcceptTcpClient();
-                var networkStream = connection.GetStream();
+                var connection = await serverListener.AcceptTcpClientAsync();
 
-                var requestText = this.ReadRequest(networkStream);
+                _ = Task.Run(async () =>
+                {
+                    var networkStream = connection.GetStream();
 
-                Console.WriteLine(requestText);
+                    var requestText = await this.ReadRequest(networkStream);
 
-                WriteResponse(networkStream, "Hello from the server!");
+                    Console.WriteLine(requestText);
 
-                connection.Close();
+                    var request = Request.Parse(requestText);
+
+                    var response = this.routingTable.MatchRequest(request);
+
+                    if (response.PrerenderAction != null)
+                        response.PrerenderAction(request, response);
+                    
+                    await WriteResponse(networkStream, "Hello from the server!");
+
+                    connection.Close();
+                });
             }
         }
 
-        private void WriteResponse(NetworkStream networkStream, string message)
+        private async Task WriteResponse(NetworkStream networkStream, string message)
         {
             var contentLength = Encoding.UTF8.GetByteCount(message);
 
@@ -57,10 +65,10 @@ Content-Length: {contentLength}
 
             var responseByte = Encoding.UTF8.GetBytes(response);
 
-            networkStream.Write(responseByte);
+            await networkStream.WriteAsync(responseByte);
         }
 
-        private string ReadRequest(NetworkStream networkStream)
+        private async Task<string> ReadRequest(NetworkStream networkStream)
         {
             var bufferLength = 1024;
             var buffer = new byte[bufferLength];
@@ -71,7 +79,7 @@ Content-Length: {contentLength}
 
             do
             {
-                var bytesRead = networkStream.Read(buffer, 0, bufferLength);
+                var bytesRead = await networkStream.ReadAsync(buffer, 0, bufferLength);
 
                 totalBytes += bytesRead;
                 if (totalBytes > 10 * 1024)
