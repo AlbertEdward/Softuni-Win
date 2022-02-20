@@ -1,26 +1,40 @@
-﻿namespace BasicWebServer.Server
-{
-    using BasicWebServer.Server.HTTP;
-    using System.Net;
-    using System.Net.Sockets;
-    using System.Text;
+﻿using BasicWebServer.Server.HTTP;
+using BasicWebServer.Server.Routing;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 
+namespace BasicWebServer.Server
+{
     public class HttpServer
     {
         private readonly IPAddress ipAddress;
         private readonly int port;
         private readonly TcpListener serverListener;
 
-        public HttpServer(string ipAddress, int port)
+        private readonly RoutingTable routingTable;
+
+        public HttpServer(string ipAddress, int port, Action<IRoutingTable> routingTableConfiguration)
         {
             this.ipAddress = IPAddress.Parse(ipAddress);
             this.port = port;
 
             this.serverListener = new TcpListener(this.ipAddress, port);
 
+            routingTableConfiguration(this.routingTable = new RoutingTable());
         }
 
-        public async Task Start()
+        public HttpServer(int port, Action<IRoutingTable> routingTable)
+            : this("127.0.0.1", port, routingTable)
+        {
+        }
+
+        public HttpServer(Action<IRoutingTable> routingTable)
+            : this(8080, routingTable)
+        {
+        }
+
+        public void Start()
         {
             this.serverListener.Start();
 
@@ -29,59 +43,47 @@
 
             while (true)
             {
-                var connection = await serverListener.AcceptTcpClientAsync();
+                var connection = serverListener.AcceptTcpClient();
 
-                _ = Task.Run(async () =>
-                {
-                    var networkStream = connection.GetStream();
+                var networkStream = connection.GetStream();
 
-                    var requestText = await this.ReadRequest(networkStream);
+                var requestText = this.ReadRequest(networkStream);
 
-                    Console.WriteLine(requestText);
+                Console.WriteLine(requestText);
 
-                    var request = Request.Parse(requestText);
+                var request = Request.Parse(requestText);
 
-                    var response = this.routingTable.MatchRequest(request);
+                var response = this.routingTable.MatchRequest(request);
 
-                    if (response.PrerenderAction != null)
-                        response.PrerenderAction(request, response);
-                    
-                    await WriteResponse(networkStream, "Hello from the server!");
+                if (response.PreRenderAction != null)
+                    response.PreRenderAction(request, response);
 
-                    connection.Close();
-                });
+                WriteResponse(networkStream, response);
+
+                connection.Close();
             }
         }
 
-        private async Task WriteResponse(NetworkStream networkStream, string message)
+        private void WriteResponse(NetworkStream networkStream, Response response)
         {
-            var contentLength = Encoding.UTF8.GetByteCount(message);
+            var responseBytes = Encoding.UTF8.GetBytes(response.ToString());
 
-            var response = $@"HTTP/1.1 200 OK
-Content-Type: text/plain; charset=UTF-8
-Content-Length: {contentLength}
-
-{message}";
-
-            var responseByte = Encoding.UTF8.GetBytes(response);
-
-            await networkStream.WriteAsync(responseByte);
+            networkStream.Write(responseBytes);
         }
 
-        private async Task<string> ReadRequest(NetworkStream networkStream)
+        private string ReadRequest(NetworkStream networkStream)
         {
             var bufferLength = 1024;
             var buffer = new byte[bufferLength];
-
-            var totalBytes = 0;
-
             var requestBuilder = new StringBuilder();
+            var totalBytes = 0;
 
             do
             {
-                var bytesRead = await networkStream.ReadAsync(buffer, 0, bufferLength);
+                var bytesRead = networkStream.Read(buffer, 0, bufferLength);
 
                 totalBytes += bytesRead;
+
                 if (totalBytes > 10 * 1024)
                 {
                     throw new InvalidOperationException("Request is too large.");

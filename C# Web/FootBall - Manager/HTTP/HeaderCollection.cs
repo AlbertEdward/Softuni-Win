@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BasicWebServer.Server.HTTP
 {
-    public class HeaderCollection :IEnumerable<Header>
+    public class HeaderCollection : IEnumerable<Header>
     {
         private readonly Dictionary<string, Header> headers;
 
@@ -15,18 +11,15 @@ namespace BasicWebServer.Server.HTTP
             => this.headers = new Dictionary<string, Header>();
 
         public string this[string name]
-            => this.headers[name].Value;
+          => this.headers[name].Value;
 
         public int Count => this.headers.Count;
 
         public bool Contains(string name)
-            => this.headers.ContainsKey(name);
+          => this.headers.ContainsKey(name);
 
         public void Add(string name, string value)
-        {
-            var header = new Header(name, value);
-            this.headers.Add(name, header);
-        }
+            => this.headers[name] = new Header(name, value);
 
         public IEnumerator<Header> GetEnumerator()
             => this.headers.Values.GetEnumerator();
