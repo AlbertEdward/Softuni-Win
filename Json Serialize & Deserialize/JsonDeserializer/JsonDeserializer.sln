@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32407.343
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonDeserializer", "JsonDeserializer.csproj", "{C7599AE9-176D-4D9B-A7B8-D57BC1D47ADC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2BAD10B8-4697-4C00-B1DA-1A0ECCD8D769}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C7599AE9-176D-4D9B-A7B8-D57BC1D47ADC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7599AE9-176D-4D9B-A7B8-D57BC1D47ADC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7599AE9-176D-4D9B-A7B8-D57BC1D47ADC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7599AE9-176D-4D9B-A7B8-D57BC1D47ADC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FD249C84-0908-430E-86CF-86AF6CFFF400}
+	EndGlobalSection
+EndGlobal
